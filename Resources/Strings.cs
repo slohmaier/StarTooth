@@ -20,6 +20,8 @@ internal static class Strings
 
     internal static string StateConnected => Get("State.Connected");
     internal static string StateNotConnected => Get("State.NotConnected");
+    internal static string StateConnecting => Get("State.Connecting");
+    internal static string StateDisconnecting => Get("State.Disconnecting");
 
     internal static string DeviceAccessibleFavorite(string name, string state) =>
         Format("Device.Accessible.Favorite", name, state);
@@ -27,8 +29,17 @@ internal static class Strings
         Format("Device.Accessible.Plain", name, state);
     internal static string DeviceAccessibleActionConnect => Get("Device.Accessible.ActionConnect");
     internal static string DeviceAccessibleActionDisconnect => Get("Device.Accessible.ActionDisconnect");
+    internal static string DeviceAccessibleActionBusy => Get("Device.Accessible.ActionBusy");
     internal static string DeviceTooltip(string address, string state) =>
         Format("Device.Tooltip", address, state);
+
+    internal static string NotifyConnectingTitle => Get("Notify.ConnectingTitle");
+    internal static string NotifyConnectingText(string name) => Format("Notify.ConnectingText", name);
+    internal static string NotifyDisconnectingText(string name) => Format("Notify.DisconnectingText", name);
+    internal static string NotifyConnectedTitle => Get("Notify.ConnectedTitle");
+    internal static string NotifyConnectedText(string name) => Format("Notify.ConnectedText", name);
+    internal static string NotifyDisconnectedTitle => Get("Notify.DisconnectedTitle");
+    internal static string NotifyDisconnectedText(string name) => Format("Notify.DisconnectedText", name);
 
     internal static string TrayConnecting(string name) => Format("Tray.Connecting", name);
     internal static string TrayDisconnecting(string name) => Format("Tray.Disconnecting", name);

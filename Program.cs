@@ -29,6 +29,8 @@ internal static class Program
 
         if (args.Length > 1 && args[0] == "--render-dialog")
             return Spike.RenderDialog(args[1]);
+        if (args.Length > 1 && args[0] == "--render-menu")
+            return Spike.RenderMenu(args[1]);
 
         Application.Run(new TrayApplicationContext());
         return 0;

@@ -52,6 +52,68 @@ internal static partial class Spike
         return 0;
     }
 
+    /// <summary>
+    /// Captures the device menu with synthetic devices covering every state, so the indicators can
+    /// be checked without having to reproduce each state on real hardware.
+    /// </summary>
+    internal static int RenderMenu(string outputPath)
+    {
+        AttachConsole(ATTACH_PARENT_PROCESS);
+
+        var devices = new List<BluetoothEntry>
+        {
+            Fake(0x001122334455, "Shokz OpenFit", connected: true),
+            Fake(0x00AABBCCDDEE, "HyperBraille", connected: false),
+            Fake(0x001100110011, "Soundcore Space A40", connected: false),
+            Fake(0x002200220022, "HyperFlat-76", connected: true),
+        };
+        var starred = new HashSet<ulong> { 0x001122334455, 0x00AABBCCDDEE };
+        var activity = new Dictionary<ulong, DeviceActivity>
+        {
+            [0x001100110011] = DeviceActivity.Connecting,
+            [0x002200220022] = DeviceActivity.Disconnecting,
+        };
+
+        using var menu = new ContextMenuStrip
+        {
+            ShowImageMargin = false,
+            Renderer = new ThemedMenuRenderer(),
+        };
+        menu.Items.AddRange(DeviceMenuBuilder.Build(
+            devices,
+            d => starred.Contains(d.Address),
+            d => activity.GetValueOrDefault(d.Address, DeviceActivity.None),
+            _ => { }).ToArray());
+        menu.Items.Add(new ToolStripSeparator());
+        menu.Items.Add(new ToolStripMenuItem(StarTooth.Resources.Strings.MenuManageFavorites));
+        menu.Items.Add(new ToolStripMenuItem(StarTooth.Resources.Strings.MenuRefresh));
+        menu.Items.Add(new ToolStripMenuItem(StarTooth.Resources.Strings.MenuExit));
+
+        menu.Show(new Point(0, 0));
+        Application.DoEvents();
+
+        using var bmp = new Bitmap(menu.Width, menu.Height);
+        menu.DrawToBitmap(bmp, new Rectangle(0, 0, menu.Width, menu.Height));
+        bmp.Save(outputPath, System.Drawing.Imaging.ImageFormat.Png);
+        menu.Close();
+
+        Console.WriteLine($"culture: {CultureInfo.CurrentUICulture.Name} -> {outputPath}");
+        foreach (ToolStripItem item in menu.Items)
+        {
+            if (item is ToolStripMenuItem m && !string.IsNullOrEmpty(m.AccessibleName))
+                Console.WriteLine($"  screen reader: \"{m.AccessibleName}\" | {m.AccessibleDescription}");
+        }
+        return 0;
+    }
+
+    private static BluetoothEntry Fake(ulong address, string name, bool connected) => new()
+    {
+        Address = address,
+        Name = name,
+        IsConnected = connected,
+        Kind = DeviceKind.Classic,
+    };
+
     internal static int List()
     {
         AttachConsole(ATTACH_PARENT_PROCESS);

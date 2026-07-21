@@ -88,6 +88,14 @@
     <comment>Matches the wording of the Windows Bluetooth settings page.</comment>
   </data>
 
+  <data name="State.Connecting" xml:space="preserve">
+    <value>Connecting</value>
+    <comment>A connection attempt is running for this device.</comment>
+  </data>
+  <data name="State.Disconnecting" xml:space="preserve">
+    <value>Disconnecting</value>
+  </data>
+
   <data name="Device.Accessible.Favorite" xml:space="preserve">
     <value>{0}, favorite, {1}</value>
     <comment>Screen reader name. {0} device name, {1} connection state.</comment>
@@ -102,6 +110,10 @@
   <data name="Device.Accessible.ActionDisconnect" xml:space="preserve">
     <value>Activating disconnects this device.</value>
   </data>
+  <data name="Device.Accessible.ActionBusy" xml:space="preserve">
+    <value>The connection is being changed. Please wait.</value>
+    <comment>Read while an attempt is running and the entry is unavailable.</comment>
+  </data>
   <data name="Device.Tooltip" xml:space="preserve">
     <value>{0} · {1}</value>
     <comment>{0} Bluetooth address, {1} connection state.</comment>
@@ -114,6 +126,32 @@
   <data name="Tray.Disconnecting" xml:space="preserve">
     <value>StarTooth – disconnecting {0}…</value>
     <comment>Tray tooltip. Windows truncates this at 63 characters.</comment>
+  </data>
+
+  <data name="Notify.ConnectingTitle" xml:space="preserve">
+    <value>Connecting</value>
+  </data>
+  <data name="Notify.ConnectingText" xml:space="preserve">
+    <value>Connecting to {0}…</value>
+    <comment>{0} device name.</comment>
+  </data>
+  <data name="Notify.DisconnectingText" xml:space="preserve">
+    <value>Disconnecting {0}…</value>
+    <comment>{0} device name.</comment>
+  </data>
+  <data name="Notify.ConnectedTitle" xml:space="preserve">
+    <value>Connected</value>
+  </data>
+  <data name="Notify.ConnectedText" xml:space="preserve">
+    <value>{0} is now connected.</value>
+    <comment>{0} device name.</comment>
+  </data>
+  <data name="Notify.DisconnectedTitle" xml:space="preserve">
+    <value>Disconnected</value>
+  </data>
+  <data name="Notify.DisconnectedText" xml:space="preserve">
+    <value>{0} is no longer connected.</value>
+    <comment>{0} device name.</comment>
   </data>
 
   <data name="Error.ConnectTitle" xml:space="preserve">

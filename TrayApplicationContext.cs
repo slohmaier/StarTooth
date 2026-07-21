@@ -11,14 +11,16 @@ internal sealed class TrayApplicationContext : ApplicationContext
     /// <summary>The product name is a proper noun and stays untranslated.</summary>
     private const string AppName = "StarTooth";
 
-    private const string StarFilled = "★";
-    private const string StarHollow = "☆";
+    private const int BalloonTimeoutMs = 5000;
 
     private readonly NotifyIcon _notifyIcon;
     private readonly ContextMenuStrip _menu;
     private readonly DeviceService _devices = new();
     private readonly Favorites _favorites = new();
     private readonly System.Windows.Forms.Timer _refreshTimer;
+
+    /// <summary>Devices with an attempt in flight, so the menu can show it and block re-entry.</summary>
+    private readonly Dictionary<ulong, DeviceActivity> _activity = [];
 
     internal TrayApplicationContext()
     {
@@ -39,7 +41,13 @@ internal sealed class TrayApplicationContext : ApplicationContext
         };
         _notifyIcon.MouseUp += OnTrayMouseUp;
 
-        _devices.Updated += () => _menu.BeginInvoke(BuildMenu);
+        // Rebuilding while the menu is on screen would yank the items out from under the pointer
+        // and out from under a screen reader's cursor. It is rebuilt on opening anyway.
+        _devices.Updated += () => _menu.BeginInvoke(() =>
+        {
+            if (!_menu.Visible)
+                BuildMenu();
+        });
 
         SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
 
@@ -92,67 +100,16 @@ internal sealed class TrayApplicationContext : ApplicationContext
     {
         _menu.Items.Clear();
 
-        var devices = _devices.Devices;
-        if (devices.Count == 0)
-        {
-            _menu.Items.Add(new ToolStripMenuItem(Strings.MenuNoDevices) { Enabled = false });
-        }
-        else if (_favorites.IsEmpty)
-        {
-            // No star has ever been given: keep it a plain, ungrouped list.
-            foreach (var device in devices)
-                _menu.Items.Add(CreateDeviceItem(device));
-        }
-        else
-        {
-            var starred = devices.Where(d => _favorites.Contains(d.Key)).ToList();
-            var rest = devices.Where(d => !_favorites.Contains(d.Key)).ToList();
-
-            foreach (var device in starred)
-                _menu.Items.Add(CreateDeviceItem(device));
-
-            if (starred.Count > 0 && rest.Count > 0)
-            {
-                _menu.Items.Add(new ToolStripSeparator());
-                _menu.Items.Add(new ToolStripMenuItem(Strings.MenuOtherDevices) { Enabled = false });
-            }
-
-            foreach (var device in rest)
-                _menu.Items.Add(CreateDeviceItem(device));
-        }
+        _menu.Items.AddRange(DeviceMenuBuilder.Build(
+            _devices.Devices,
+            device => _favorites.Contains(device.Key),
+            device => _activity.GetValueOrDefault(device.Address, DeviceActivity.None),
+            device => _ = ToggleConnectionAsync(device)).ToArray());
 
         _menu.Items.Add(new ToolStripSeparator());
         _menu.Items.Add(new ToolStripMenuItem(Strings.MenuManageFavorites, null, (_, _) => ShowFavorites()));
         _menu.Items.Add(new ToolStripMenuItem(Strings.MenuRefresh, null, (_, _) => _ = RefreshAsync()));
         _menu.Items.Add(new ToolStripMenuItem(Strings.MenuExit, null, (_, _) => ExitThread()));
-    }
-
-    private ToolStripMenuItem CreateDeviceItem(BluetoothEntry device)
-    {
-        bool isFavorite = _favorites.Contains(device.Key);
-        string state = device.IsConnected ? Strings.StateConnected : Strings.StateNotConnected;
-
-        var item = new ToolStripMenuItem($"{(isFavorite ? StarFilled : StarHollow)}  {device.Name}")
-        {
-            Checked = device.IsConnected,
-            CheckOnClick = false,
-            ToolTipText = Strings.DeviceTooltip(ClassicBluetooth.FormatAddress(device.Address), state),
-
-            // Bold text and a star glyph carry no meaning for a screen reader, so the state is
-            // spelled out here instead of being left to the visuals.
-            AccessibleName = isFavorite
-                ? Strings.DeviceAccessibleFavorite(device.Name, state)
-                : Strings.DeviceAccessiblePlain(device.Name, state),
-            AccessibleDescription = device.IsConnected
-                ? Strings.DeviceAccessibleActionDisconnect
-                : Strings.DeviceAccessibleActionConnect,
-        };
-
-        if (device.IsConnected)
-            item.Font = new Font(item.Font, FontStyle.Bold);
-
-        item.Click += (_, _) => _ = ToggleConnectionAsync(device);
-        return item;
     }
 
     private void ShowFavorites()
@@ -163,27 +120,58 @@ internal sealed class TrayApplicationContext : ApplicationContext
 
     private async Task ToggleConnectionAsync(BluetoothEntry device)
     {
+        // Activating an entry closes the menu, so the progress of an attempt cannot be shown
+        // there. Notifications carry it instead, which is also the only channel a screen reader
+        // hears without the user going looking for it.
+        if (_activity.ContainsKey(device.Address))
+            return;
+
         bool connect = !device.IsConnected;
+        _activity[device.Address] = connect ? DeviceActivity.Connecting : DeviceActivity.Disconnecting;
+
         try
         {
             SetTrayText(connect
                 ? Strings.TrayConnecting(device.Name)
                 : Strings.TrayDisconnecting(device.Name));
+            Notify(
+                Strings.NotifyConnectingTitle,
+                connect
+                    ? Strings.NotifyConnectingText(device.Name)
+                    : Strings.NotifyDisconnectingText(device.Name),
+                ToolTipIcon.Info);
+
             await DeviceService.SetConnectedAsync(device, connect);
-            await RefreshAsync();
+
+            Notify(
+                connect ? Strings.NotifyConnectedTitle : Strings.NotifyDisconnectedTitle,
+                connect
+                    ? Strings.NotifyConnectedText(device.Name)
+                    : Strings.NotifyDisconnectedText(device.Name),
+                ToolTipIcon.Info);
         }
         catch (Exception ex)
         {
-            _notifyIcon.ShowBalloonTip(
-                5000,
+            Notify(
                 connect ? Strings.ErrorConnectTitle : Strings.ErrorDisconnectTitle,
                 Strings.ErrorBalloon(device.Name, ex.Message),
-                ToolTipIcon.Warning);
+                ToolTipIcon.Error);
         }
         finally
         {
+            _activity.Remove(device.Address);
             SetTrayText(AppName);
+            await RefreshAsync();
         }
+    }
+
+    /// <summary>
+    /// Shows a notification. Windows renders these as toasts, which both remain in the action
+    /// centre and get announced by a screen reader without the user having to hunt for them.
+    /// </summary>
+    private void Notify(string title, string text, ToolTipIcon icon)
+    {
+        _notifyIcon.ShowBalloonTip(BalloonTimeoutMs, title, text, icon);
     }
 
     /// <summary>NotifyIcon.Text throws above 63 characters, which a long device name can exceed.</summary>

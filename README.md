@@ -14,8 +14,20 @@ Liste, alle übrigen darunter unter „Weitere Geräte“.
 | Klick oder Eingabetaste auf einem Gerät | verbinden bzw. trennen |
 | „Favoriten verwalten…“ | Dialog zum Setzen der Sterne |
 
-Verbundene Geräte werden fett und mit Haken dargestellt. Solange kein einziger Stern vergeben
-ist, bleibt die Liste flach und ungruppiert.
+Jeder Eintrag trägt einen Indikator für seinen Zustand:
+
+| Indikator | Bedeutung |
+| --- | --- |
+| `●` | verbunden (zusätzlich fett) |
+| `○` | nicht verbunden |
+| `◌` | Verbindungsversuch läuft gerade |
+| `★` | Favorit |
+
+Solange kein einziger Stern vergeben ist, bleibt die Liste flach und ungruppiert.
+
+Ein Verbindungsversuch, sein Ergebnis und jeder Fehlschlag werden zusätzlich als Windows-
+Benachrichtigung gemeldet. Das ist nötig, weil das Menü sich beim Aktivieren eines Eintrags
+schließt und den Fortschritt deshalb nicht selbst anzeigen kann.
 
 ### Barrierefreiheit
 
@@ -23,10 +35,21 @@ Das Menü kommt ohne Mausgesten und ohne Modifier-Tasten aus: Die Sterne werden 
 selbst vergeben, sondern in einem eigenen Dialog mit einer Standard-`CheckedListBox`, in der die
 Leertaste umschaltet und der Screenreader den Zustand von sich aus ansagt.
 
-Fettdruck und Sternsymbol im Menü sind rein visuell und deshalb nicht die einzige Quelle für den
-Zustand — jeder Eintrag trägt ihn zusätzlich im `AccessibleName` („OpenFit by Shokz, Favorit,
-verbunden“) und im `AccessibleDescription`, das die Wirkung des Aktivierens beschreibt. Alle
-Menüpunkte und Dialogelemente haben Zugriffstasten.
+Fettdruck und die Symbole `● ○ ◌ ★` sind rein visuell. Screenreader sprechen Sonderzeichen je
+nach eingestellter Symbolebene unterschiedlich oder gar nicht aus, deshalb ist keines davon die
+einzige Quelle für seinen Zustand: Jeder Eintrag führt ihn ausgeschrieben im `AccessibleName`
+(„Shokz OpenFit, Favorit, Verbunden“) und die Wirkung des Aktivierens im `AccessibleDescription`.
+
+Laufende Verbindungsversuche bleiben bewusst aktivierbar statt `Enabled = false` zu setzen:
+ToolStrip überspringt deaktivierte Einträge bei der Tastaturnavigation, womit ausgerechnet der
+laufende Versuch der einzige Zustand wäre, den man mit Tastatur oder Screenreader nie erreicht.
+Ein zweiter Aufruf wird stattdessen im Aufrufer abgelehnt.
+
+Die Überschrift „Weitere Geräte“ ist als deaktivierter Eintrag ebenfalls nicht anspringbar. Das
+ist unkritisch, weil sie nichts trägt, was nicht schon im `AccessibleName` jedes Eintrags steht —
+Favoriten sind dort als solche benannt.
+
+Alle Menüpunkte und Dialogelemente haben Zugriffstasten.
 
 ### Sprachen
 
@@ -63,7 +86,8 @@ mit; die übrigen Steuerelemente laufen über `Application.SetColorMode`.
 | `Bluetooth/DeviceService.cs` | führt beide Listen zusammen und cached sie |
 | `Favorites.cs` | Sterne, gespeichert in `%APPDATA%\StarTooth\favorites.json` |
 | `FavoritesForm.cs` | barrierefreier Dialog zum Vergeben der Sterne |
-| `TrayApplicationContext.cs` | Tray-Icon und Menüaufbau |
+| `TrayApplicationContext.cs` | Tray-Icon, Benachrichtigungen, Ablauf eines Versuchs |
+| `DeviceMenuBuilder.cs` | baut die Geräteeinträge samt Indikatoren |
 | `TrayIcons.cs` | zeichnet das Icon zur Laufzeit |
 | `Theme.cs`, `ThemedMenuRenderer.cs` | Light-/Dark-Mode |
 | `Resources/Strings*.resx`, `Resources/Strings.cs` | Übersetzungen und typisierter Zugriff darauf |
@@ -90,6 +114,8 @@ StarTooth.exe --connect AA:BB:CC:DD:EE:FF # Verbindung testen
 StarTooth.exe --disconnect AA:BB:CC:DD:EE:FF
 StarTooth.exe --render-icon <verzeichnis> # Icon als PNG ausgeben
 StarTooth.exe --render-dialog <datei.png> # Favoritendialog als PNG ausgeben
+StarTooth.exe --render-menu <datei.png>   # Menü mit allen Zuständen als PNG, plus
+                                          # Ausgabe der Screenreader-Texte auf der Konsole
 ```
 
 Alle Diagnoseausgaben sind englisch, weil sie sich an Entwickler richten und nicht an Benutzer;

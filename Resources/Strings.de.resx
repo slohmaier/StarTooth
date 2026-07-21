@@ -85,6 +85,14 @@
     <comment>Wortlaut der Windows-Bluetooth-Einstellungen, nicht „getrennt“.</comment>
   </data>
 
+  <data name="State.Connecting" xml:space="preserve">
+    <value>Wird verbunden</value>
+    <comment>Für dieses Gerät läuft gerade ein Verbindungsversuch.</comment>
+  </data>
+  <data name="State.Disconnecting" xml:space="preserve">
+    <value>Wird getrennt</value>
+  </data>
+
   <data name="Device.Accessible.Favorite" xml:space="preserve">
     <value>{0}, Favorit, {1}</value>
     <comment>Name für die Sprachausgabe. {0} Gerätename, {1} Verbindungszustand.</comment>
@@ -99,6 +107,10 @@
   <data name="Device.Accessible.ActionDisconnect" xml:space="preserve">
     <value>Aktivieren trennt die Verbindung zu diesem Gerät.</value>
   </data>
+  <data name="Device.Accessible.ActionBusy" xml:space="preserve">
+    <value>Die Verbindung wird gerade geändert. Bitte warten.</value>
+    <comment>Wird vorgelesen, solange ein Versuch läuft und der Eintrag nicht verfügbar ist.</comment>
+  </data>
   <data name="Device.Tooltip" xml:space="preserve">
     <value>{0} · {1}</value>
     <comment>{0} Bluetooth-Adresse, {1} Verbindungszustand.</comment>
@@ -111,6 +123,32 @@
   <data name="Tray.Disconnecting" xml:space="preserve">
     <value>StarTooth – {0} wird getrennt…</value>
     <comment>QuickInfo im Infobereich. Windows kürzt nach 63 Zeichen.</comment>
+  </data>
+
+  <data name="Notify.ConnectingTitle" xml:space="preserve">
+    <value>Verbindung wird hergestellt</value>
+  </data>
+  <data name="Notify.ConnectingText" xml:space="preserve">
+    <value>{0} wird verbunden…</value>
+    <comment>{0} Gerätename.</comment>
+  </data>
+  <data name="Notify.DisconnectingText" xml:space="preserve">
+    <value>{0} wird getrennt…</value>
+    <comment>{0} Gerätename.</comment>
+  </data>
+  <data name="Notify.ConnectedTitle" xml:space="preserve">
+    <value>Verbunden</value>
+  </data>
+  <data name="Notify.ConnectedText" xml:space="preserve">
+    <value>{0} ist jetzt verbunden.</value>
+    <comment>{0} Gerätename.</comment>
+  </data>
+  <data name="Notify.DisconnectedTitle" xml:space="preserve">
+    <value>Verbindung getrennt</value>
+  </data>
+  <data name="Notify.DisconnectedText" xml:space="preserve">
+    <value>{0} ist nicht mehr verbunden.</value>
+    <comment>{0} Gerätename.</comment>
   </data>
 
   <data name="Error.ConnectTitle" xml:space="preserve">
