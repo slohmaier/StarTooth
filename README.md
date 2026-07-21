@@ -28,6 +28,25 @@ Zustand — jeder Eintrag trägt ihn zusätzlich im `AccessibleName` („OpenFit
 verbunden“) und im `AccessibleDescription`, das die Wirkung des Aktivierens beschreibt. Alle
 Menüpunkte und Dialogelemente haben Zugriffstasten.
 
+### Sprachen
+
+StarTooth folgt der Windows-Anzeigesprache. Enthalten sind Englisch (neutrale Kultur) und
+Deutsch als Satellite Assembly; eine weitere Sprache ist genau eine zusätzliche
+`Resources/Strings.<kultur>.resx`.
+
+Übersetzt wird mit der Terminologie der jeweiligen Windows-Oberfläche, nicht wörtlich aus dem
+Englischen. Im Deutschen heißt es deshalb „gekoppelte Geräte“ und nicht „gepairte“, und der
+Zustand ist „Nicht verbunden“ statt „getrennt“ — so wie es in den Windows-Bluetooth-Einstellungen
+steht. Die `.resx`-Dateien enthalten zu jedem mehrdeutigen Eintrag einen Kommentar mit der
+Bedeutung der Platzhalter, damit spätere Übersetzungen nicht raten müssen.
+
+Zum Prüfen lässt sich die Sprache erzwingen:
+
+```powershell
+StarTooth.exe --lang de
+StarTooth.exe --lang en-US
+```
+
 ### Dark Mode
 
 StarTooth folgt der Windows-Einstellung für App-Farben, auch bei einem Wechsel zur Laufzeit.
@@ -47,6 +66,7 @@ mit; die übrigen Steuerelemente laufen über `Application.SetColorMode`.
 | `TrayApplicationContext.cs` | Tray-Icon und Menüaufbau |
 | `TrayIcons.cs` | zeichnet das Icon zur Laufzeit |
 | `Theme.cs`, `ThemedMenuRenderer.cs` | Light-/Dark-Mode |
+| `Resources/Strings*.resx`, `Resources/Strings.cs` | Übersetzungen und typisierter Zugriff darauf |
 
 Windows bietet keine allgemeine „Connect“-API. Für Classic-Geräte schaltet StarTooth deshalb
 über `BluetoothSetServiceState` alle installierten Dienste des Geräts ein bzw. aus, was den
@@ -71,6 +91,9 @@ StarTooth.exe --disconnect AA:BB:CC:DD:EE:FF
 StarTooth.exe --render-icon <verzeichnis> # Icon als PNG ausgeben
 StarTooth.exe --render-dialog <datei.png> # Favoritendialog als PNG ausgeben
 ```
+
+Alle Diagnoseausgaben sind englisch, weil sie sich an Entwickler richten und nicht an Benutzer;
+lokalisiert ist nur, was in der Oberfläche erscheint. `--lang` wirkt auch auf `--render-dialog`.
 
 ## Status
 

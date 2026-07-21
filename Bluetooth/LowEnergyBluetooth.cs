@@ -1,3 +1,4 @@
+using StarTooth.Resources;
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Enumeration;
 
@@ -60,14 +61,14 @@ internal static class LowEnergyBluetooth
         }
 
         BluetoothLEDevice? device = await BluetoothLEDevice.FromBluetoothAddressAsync(address)
-            ?? throw new InvalidOperationException("Gerät nicht erreichbar.");
+            ?? throw new InvalidOperationException(Strings.ErrorDeviceUnreachable);
 
         // Requesting the services is what triggers the actual connection attempt.
         var result = await device.GetGattServicesAsync(BluetoothCacheMode.Uncached);
         if (result.Status != Windows.Devices.Bluetooth.GenericAttributeProfile.GattCommunicationStatus.Success)
         {
             device.Dispose();
-            throw new InvalidOperationException($"Verbindung fehlgeschlagen ({result.Status}).");
+            throw new InvalidOperationException(Strings.ErrorGattFailed(result.Status.ToString()));
         }
 
         if (Held.Remove(address, out BluetoothLEDevice? previous))

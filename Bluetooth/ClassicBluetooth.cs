@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 using StarTooth.Native;
+using StarTooth.Resources;
 using static StarTooth.Native.BluetoothApis;
 
 namespace StarTooth.Bluetooth;
@@ -140,7 +141,7 @@ internal static class ClassicBluetooth
         }
 
         if (!found)
-            throw new InvalidOperationException("Für dieses Gerät sind keine Dienste installiert.");
+            throw new InvalidOperationException(Strings.ErrorNoServices);
         if (errors.Count > 0)
             throw new InvalidOperationException(string.Join(Environment.NewLine, errors));
     }

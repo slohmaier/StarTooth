@@ -37,6 +37,7 @@ internal static partial class Spike
         AttachConsole(ATTACH_PARENT_PROCESS);
         var devices = ClassicBluetooth.ListPaired();
         using var form = new FavoritesForm(devices, new Favorites());
+        form.Text += $"  [{CultureInfo.CurrentUICulture.Name}]";
         form.Show();
         Application.DoEvents();
 
@@ -45,7 +46,9 @@ internal static partial class Spike
         bmp.Save(outputPath, System.Drawing.Imaging.ImageFormat.Png);
         form.Close();
 
-        Console.WriteLine($"Theme: {(Theme.IsDark ? "dunkel" : "hell")} -> {outputPath}");
+        Console.WriteLine(
+            $"Theme: {(Theme.IsDark ? "dark" : "light")}, " +
+            $"culture: {CultureInfo.CurrentUICulture.Name} -> {outputPath}");
         return 0;
     }
 
@@ -55,18 +58,18 @@ internal static partial class Spike
         try
         {
             var devices = ClassicBluetooth.ListPaired();
-            Console.WriteLine($"{devices.Count} gepairte Classic-Geräte:");
+            Console.WriteLine($"{devices.Count} paired Classic device(s):");
             foreach (var d in devices)
             {
                 Console.WriteLine(
-                    $"  [{(d.IsConnected ? "verbunden" : "getrennt ")}] " +
+                    $"  [{(d.IsConnected ? "connected   " : "disconnected")}] " +
                     $"{ClassicBluetooth.FormatAddress(d.Address)}  CoD=0x{d.ClassOfDevice:X6}  {d.Name}");
             }
             return 0;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"FEHLER: {ex}");
+            Console.WriteLine($"ERROR: {ex}");
             return 1;
         }
     }
@@ -77,14 +80,15 @@ internal static partial class Spike
         try
         {
             ulong addr = ParseAddress(address);
-            Console.WriteLine($"{(connect ? "Verbinde" : "Trenne")} {ClassicBluetooth.FormatAddress(addr)} ...");
+            Console.WriteLine(
+                $"{(connect ? "Connecting" : "Disconnecting")} {ClassicBluetooth.FormatAddress(addr)} ...");
             ClassicBluetooth.SetConnected(addr, connect);
             Console.WriteLine("OK");
             return 0;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"FEHLER: {ex.Message}");
+            Console.WriteLine($"ERROR: {ex.Message}");
             return 1;
         }
     }

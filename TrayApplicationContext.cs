@@ -1,12 +1,16 @@
 using System.Reflection;
 using Microsoft.Win32;
 using StarTooth.Bluetooth;
+using StarTooth.Resources;
 
 namespace StarTooth;
 
 /// <summary>Owns the tray icon and builds the device menu for the lifetime of the process.</summary>
 internal sealed class TrayApplicationContext : ApplicationContext
 {
+    /// <summary>The product name is a proper noun and stays untranslated.</summary>
+    private const string AppName = "StarTooth";
+
     private const string StarFilled = "★";
     private const string StarHollow = "☆";
 
@@ -29,7 +33,7 @@ internal sealed class TrayApplicationContext : ApplicationContext
         _notifyIcon = new NotifyIcon
         {
             Icon = TrayIcons.Star,
-            Text = "StarTooth",
+            Text = AppName,
             Visible = true,
             ContextMenuStrip = _menu,
         };
@@ -91,7 +95,7 @@ internal sealed class TrayApplicationContext : ApplicationContext
         var devices = _devices.Devices;
         if (devices.Count == 0)
         {
-            _menu.Items.Add(new ToolStripMenuItem("Keine gepairten Geräte gefunden") { Enabled = false });
+            _menu.Items.Add(new ToolStripMenuItem(Strings.MenuNoDevices) { Enabled = false });
         }
         else if (_favorites.IsEmpty)
         {
@@ -110,7 +114,7 @@ internal sealed class TrayApplicationContext : ApplicationContext
             if (starred.Count > 0 && rest.Count > 0)
             {
                 _menu.Items.Add(new ToolStripSeparator());
-                _menu.Items.Add(new ToolStripMenuItem("Weitere Geräte") { Enabled = false });
+                _menu.Items.Add(new ToolStripMenuItem(Strings.MenuOtherDevices) { Enabled = false });
             }
 
             foreach (var device in rest)
@@ -118,30 +122,30 @@ internal sealed class TrayApplicationContext : ApplicationContext
         }
 
         _menu.Items.Add(new ToolStripSeparator());
-        _menu.Items.Add(new ToolStripMenuItem("&Favoriten verwalten…", null, (_, _) => ShowFavorites()));
-        _menu.Items.Add(new ToolStripMenuItem("&Aktualisieren", null, (_, _) => _ = RefreshAsync()));
-        _menu.Items.Add(new ToolStripMenuItem("&Beenden", null, (_, _) => ExitThread()));
+        _menu.Items.Add(new ToolStripMenuItem(Strings.MenuManageFavorites, null, (_, _) => ShowFavorites()));
+        _menu.Items.Add(new ToolStripMenuItem(Strings.MenuRefresh, null, (_, _) => _ = RefreshAsync()));
+        _menu.Items.Add(new ToolStripMenuItem(Strings.MenuExit, null, (_, _) => ExitThread()));
     }
 
     private ToolStripMenuItem CreateDeviceItem(BluetoothEntry device)
     {
         bool isFavorite = _favorites.Contains(device.Key);
-        string state = device.IsConnected ? "verbunden" : "getrennt";
+        string state = device.IsConnected ? Strings.StateConnected : Strings.StateNotConnected;
 
         var item = new ToolStripMenuItem($"{(isFavorite ? StarFilled : StarHollow)}  {device.Name}")
         {
             Checked = device.IsConnected,
             CheckOnClick = false,
-            ToolTipText = $"{ClassicBluetooth.FormatAddress(device.Address)} · {state}",
+            ToolTipText = Strings.DeviceTooltip(ClassicBluetooth.FormatAddress(device.Address), state),
 
             // Bold text and a star glyph carry no meaning for a screen reader, so the state is
             // spelled out here instead of being left to the visuals.
             AccessibleName = isFavorite
-                ? $"{device.Name}, Favorit, {state}"
-                : $"{device.Name}, {state}",
+                ? Strings.DeviceAccessibleFavorite(device.Name, state)
+                : Strings.DeviceAccessiblePlain(device.Name, state),
             AccessibleDescription = device.IsConnected
-                ? "Aktivieren trennt die Verbindung."
-                : "Aktivieren stellt die Verbindung her.",
+                ? Strings.DeviceAccessibleActionDisconnect
+                : Strings.DeviceAccessibleActionConnect,
         };
 
         if (device.IsConnected)
@@ -162,7 +166,9 @@ internal sealed class TrayApplicationContext : ApplicationContext
         bool connect = !device.IsConnected;
         try
         {
-            SetTrayText($"StarTooth – {(connect ? "verbinde" : "trenne")} {device.Name}…");
+            SetTrayText(connect
+                ? Strings.TrayConnecting(device.Name)
+                : Strings.TrayDisconnecting(device.Name));
             await DeviceService.SetConnectedAsync(device, connect);
             await RefreshAsync();
         }
@@ -170,13 +176,13 @@ internal sealed class TrayApplicationContext : ApplicationContext
         {
             _notifyIcon.ShowBalloonTip(
                 5000,
-                connect ? "Verbindung fehlgeschlagen" : "Trennen fehlgeschlagen",
-                $"{device.Name}: {ex.Message}",
+                connect ? Strings.ErrorConnectTitle : Strings.ErrorDisconnectTitle,
+                Strings.ErrorBalloon(device.Name, ex.Message),
                 ToolTipIcon.Warning);
         }
         finally
         {
-            SetTrayText("StarTooth");
+            SetTrayText(AppName);
         }
     }
 

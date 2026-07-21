@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <data name="Menu.NoDevices" xml:space="preserve">
+    <value>Keine gekoppelten Geräte gefunden</value>
+    <comment>„Gekoppelt“ ist der Begriff der deutschen Windows-Oberfläche, nicht „gepairt“.</comment>
+  </data>
+  <data name="Menu.OtherDevices" xml:space="preserve">
+    <value>Weitere Geräte</value>
+  </data>
+  <data name="Menu.ManageFavorites" xml:space="preserve">
+    <value>&amp;Favoriten verwalten…</value>
+  </data>
+  <data name="Menu.Refresh" xml:space="preserve">
+    <value>&amp;Aktualisieren</value>
+  </data>
+  <data name="Menu.Exit" xml:space="preserve">
+    <value>&amp;Beenden</value>
+  </data>
+
+  <data name="State.Connected" xml:space="preserve">
+    <value>Verbunden</value>
+    <comment>Wortlaut der Windows-Bluetooth-Einstellungen.</comment>
+  </data>
+  <data name="State.NotConnected" xml:space="preserve">
+    <value>Nicht verbunden</value>
+    <comment>Wortlaut der Windows-Bluetooth-Einstellungen, nicht „getrennt“.</comment>
+  </data>
+
+  <data name="Device.Accessible.Favorite" xml:space="preserve">
+    <value>{0}, Favorit, {1}</value>
+    <comment>Name für die Sprachausgabe. {0} Gerätename, {1} Verbindungszustand.</comment>
+  </data>
+  <data name="Device.Accessible.Plain" xml:space="preserve">
+    <value>{0}, {1}</value>
+    <comment>Name für die Sprachausgabe. {0} Gerätename, {1} Verbindungszustand.</comment>
+  </data>
+  <data name="Device.Accessible.ActionConnect" xml:space="preserve">
+    <value>Aktivieren stellt die Verbindung zu diesem Gerät her.</value>
+  </data>
+  <data name="Device.Accessible.ActionDisconnect" xml:space="preserve">
+    <value>Aktivieren trennt die Verbindung zu diesem Gerät.</value>
+  </data>
+  <data name="Device.Tooltip" xml:space="preserve">
+    <value>{0} · {1}</value>
+    <comment>{0} Bluetooth-Adresse, {1} Verbindungszustand.</comment>
+  </data>
+
+  <data name="Tray.Connecting" xml:space="preserve">
+    <value>StarTooth – {0} wird verbunden…</value>
+    <comment>QuickInfo im Infobereich. Windows kürzt nach 63 Zeichen.</comment>
+  </data>
+  <data name="Tray.Disconnecting" xml:space="preserve">
+    <value>StarTooth – {0} wird getrennt…</value>
+    <comment>QuickInfo im Infobereich. Windows kürzt nach 63 Zeichen.</comment>
+  </data>
+
+  <data name="Error.ConnectTitle" xml:space="preserve">
+    <value>Verbindung fehlgeschlagen</value>
+  </data>
+  <data name="Error.DisconnectTitle" xml:space="preserve">
+    <value>Trennen fehlgeschlagen</value>
+  </data>
+  <data name="Error.Balloon" xml:space="preserve">
+    <value>{0}: {1}</value>
+    <comment>{0} Gerätename, {1} Fehlermeldung.</comment>
+  </data>
+  <data name="Error.NoServices" xml:space="preserve">
+    <value>Für dieses Gerät sind keine Dienste installiert.</value>
+  </data>
+  <data name="Error.DeviceUnreachable" xml:space="preserve">
+    <value>Das Gerät ist nicht erreichbar.</value>
+  </data>
+  <data name="Error.GattFailed" xml:space="preserve">
+    <value>Verbindung fehlgeschlagen ({0}).</value>
+    <comment>{0} ist der von Windows gemeldete GATT-Status.</comment>
+  </data>
+
+  <data name="Dialog.Title" xml:space="preserve">
+    <value>StarTooth – Favoriten verwalten</value>
+  </data>
+  <data name="Dialog.Hint" xml:space="preserve">
+    <value>&amp;Geräte: Mit der Leertaste den Stern setzen oder entfernen.</value>
+    <comment>Beschriftung der Geräteliste. Die Zugriffstaste setzt den Fokus in die Liste.</comment>
+  </data>
+  <data name="Dialog.ListName" xml:space="preserve">
+    <value>Gekoppelte Geräte</value>
+  </data>
+  <data name="Dialog.ListDescription" xml:space="preserve">
+    <value>Liste aller gekoppelten Bluetooth-Geräte. Aktivierte Geräte erscheinen im Menü oben als Favoriten.</value>
+  </data>
+  <data name="Dialog.Ok" xml:space="preserve">
+    <value>OK</value>
+    <comment>Ohne Zugriffstaste: Standardschaltfläche, mit der Eingabetaste erreichbar.</comment>
+  </data>
+  <data name="Dialog.Cancel" xml:space="preserve">
+    <value>Abbrechen</value>
+    <comment>Ohne Zugriffstaste: Abbruchschaltfläche, mit Esc erreichbar.</comment>
+  </data>
+</root>

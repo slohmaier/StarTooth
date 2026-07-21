@@ -9,6 +9,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- The neutral resources are English, so no en satellite assembly is probed for. -->
+    <NeutralResourcesLanguage>en</NeutralResourcesLanguage>
     <AssemblyTitle>StarTooth</AssemblyTitle>
     <Product>StarTooth</Product>
     <Company>Stefan Lohmaier</Company>

@@ -1,4 +1,4 @@
-using StarTooth.Bluetooth;
+using System.Globalization;
 
 namespace StarTooth;
 
@@ -7,6 +7,8 @@ internal static class Program
     [STAThread]
     private static int Main(string[] args)
     {
+        ApplyLanguageOverride(args);
+
         // Spike entry points, used while the connect path is being validated.
         if (args.Length > 0 && args[0] == "--list")
             return Spike.List();
@@ -30,5 +32,27 @@ internal static class Program
 
         Application.Run(new TrayApplicationContext());
         return 0;
+    }
+
+    /// <summary>
+    /// Honours "--lang &lt;culture&gt;" anywhere in the arguments. The app otherwise follows the
+    /// Windows display language; this exists so both translations can be checked on one machine.
+    /// </summary>
+    private static void ApplyLanguageOverride(string[] args)
+    {
+        int index = Array.IndexOf(args, "--lang");
+        if (index < 0 || index + 1 >= args.Length)
+            return;
+
+        try
+        {
+            var culture = new CultureInfo(args[index + 1]);
+            CultureInfo.DefaultThreadCurrentUICulture = culture;
+            CultureInfo.CurrentUICulture = culture;
+        }
+        catch (CultureNotFoundException)
+        {
+            // An unknown culture simply leaves the system language in place.
+        }
     }
 }

@@ -1,4 +1,5 @@
 using StarTooth.Bluetooth;
+using StarTooth.Resources;
 
 namespace StarTooth;
 
@@ -18,26 +19,29 @@ internal sealed class FavoritesForm : Form
         _devices = devices;
         _favorites = favorites;
 
-        Text = "StarTooth – Favoriten verwalten";
+        Text = Strings.DialogTitle;
         FormBorderStyle = FormBorderStyle.Sizable;
         StartPosition = FormStartPosition.CenterScreen;
         MinimizeBox = false;
         MaximizeBox = false;
         ShowInTaskbar = true;
-        ClientSize = new Size(420, 340);
-        MinimumSize = new Size(360, 280);
+        ClientSize = new Size(420, 360);
+        MinimumSize = new Size(360, 300);
         Icon = TrayIcons.Star;
         BackColor = Theme.Background;
         ForeColor = Theme.Foreground;
         Padding = new Padding(12);
 
+        // AutoSize only grows the height of a top-docked label, so a translation wider than the
+        // dialog gets clipped. The height is measured from the wrapped text instead of guessed,
+        // because translations differ in length by far more than a fixed value would absorb.
         var hint = new Label
         {
-            Text = "&Geräte: Leertaste setzt oder entfernt den Stern.",
+            Text = Strings.DialogHint,
             Dock = DockStyle.Top,
-            AutoSize = true,
+            AutoSize = false,
+            TextAlign = ContentAlignment.TopLeft,
             ForeColor = Theme.Foreground,
-            Margin = new Padding(0, 0, 0, 6),
         };
 
         _list = new CheckedListBox
@@ -48,9 +52,8 @@ internal sealed class FavoritesForm : Form
             BackColor = Theme.IsDark ? Color.FromArgb(45, 45, 45) : Color.White,
             ForeColor = Theme.Foreground,
             IntegralHeight = false,
-            AccessibleName = "Gepairte Geräte",
-            AccessibleDescription =
-                "Liste aller gepairten Bluetooth-Geräte. Angehakte Geräte erscheinen im Menü als Favoriten oben.",
+            AccessibleName = Strings.DialogListName,
+            AccessibleDescription = Strings.DialogListDescription,
         };
 
         foreach (var device in _devices)
@@ -66,7 +69,7 @@ internal sealed class FavoritesForm : Form
 
         var cancel = new Button
         {
-            Text = "Abbre&chen",
+            Text = Strings.DialogCancel,
             DialogResult = DialogResult.Cancel,
             AutoSize = true,
             BackColor = Theme.Highlight,
@@ -76,7 +79,7 @@ internal sealed class FavoritesForm : Form
 
         var ok = new Button
         {
-            Text = "&OK",
+            Text = Strings.DialogOk,
             DialogResult = DialogResult.OK,
             AutoSize = true,
             BackColor = Theme.Highlight,
@@ -95,8 +98,21 @@ internal sealed class FavoritesForm : Form
         AcceptButton = ok;
         CancelButton = cancel;
 
+        hint.Height = MeasureWrappedHeight(hint) + 8;
+
         if (_list.Items.Count > 0)
             _list.SelectedIndex = 0;
+    }
+
+    /// <summary>Height the label needs once its text wraps to the available width.</summary>
+    private int MeasureWrappedHeight(Label label)
+    {
+        int available = ClientSize.Width - Padding.Horizontal;
+        return TextRenderer.MeasureText(
+            label.Text,
+            label.Font,
+            new Size(available, 0),
+            TextFormatFlags.WordBreak).Height;
     }
 
     protected override void OnFormClosing(FormClosingEventArgs e)
