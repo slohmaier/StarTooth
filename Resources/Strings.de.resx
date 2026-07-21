@@ -69,6 +69,9 @@
   <data name="Menu.ManageFavorites" xml:space="preserve">
     <value>&amp;Favoriten verwalten…</value>
   </data>
+  <data name="Menu.Settings" xml:space="preserve">
+    <value>&amp;Einstellungen…</value>
+  </data>
   <data name="Menu.Refresh" xml:space="preserve">
     <value>&amp;Aktualisieren</value>
   </data>
@@ -185,6 +188,42 @@
   <data name="Dialog.ListDescription" xml:space="preserve">
     <value>Liste aller gekoppelten Bluetooth-Geräte. Aktivierte Geräte erscheinen im Menü oben als Favoriten.</value>
   </data>
+  <data name="Settings.Title" xml:space="preserve">
+    <value>StarTooth – Einstellungen</value>
+  </data>
+  <data name="Settings.Language" xml:space="preserve">
+    <value>&amp;Sprache:</value>
+  </data>
+  <data name="Settings.LanguageSystem" xml:space="preserve">
+    <value>Windows-Anzeigesprache verwenden</value>
+    <comment>Standardeintrag der Sprachliste.</comment>
+  </data>
+  <data name="Settings.ColorMode" xml:space="preserve">
+    <value>&amp;Modus auswählen:</value>
+    <comment>Wortlaut der Windows-Personalisierung für Hell und Dunkel.</comment>
+  </data>
+  <data name="Settings.ColorModeSystem" xml:space="preserve">
+    <value>Windows-Einstellung folgen</value>
+  </data>
+  <data name="Settings.ColorModeLight" xml:space="preserve">
+    <value>Hell</value>
+  </data>
+  <data name="Settings.ColorModeDark" xml:space="preserve">
+    <value>Dunkel</value>
+  </data>
+  <data name="Settings.Autostart" xml:space="preserve">
+    <value>StarTooth bei der Anmeldung an &amp;Windows starten</value>
+  </data>
+  <data name="Settings.AutostartDescription" xml:space="preserve">
+    <value>Trägt StarTooth in die Programme ein, die Windows für Ihr Konto automatisch startet.</value>
+  </data>
+  <data name="Settings.AutostartFailedTitle" xml:space="preserve">
+    <value>Autostart konnte nicht geändert werden</value>
+  </data>
+  <data name="Settings.AutostartFailedText" xml:space="preserve">
+    <value>Windows hat die Änderung an der Registrierung abgelehnt. Die Einstellung blieb unverändert.</value>
+  </data>
+
   <data name="Dialog.Ok" xml:space="preserve">
     <value>OK</value>
     <comment>Ohne Zugriffstaste: Standardschaltfläche, mit der Eingabetaste erreichbar.</comment>

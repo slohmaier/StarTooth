@@ -38,13 +38,7 @@ internal static partial class Spike
         var devices = ClassicBluetooth.ListPaired();
         using var form = new FavoritesForm(devices, new Favorites());
         form.Text += $"  [{CultureInfo.CurrentUICulture.Name}]";
-        form.Show();
-        Application.DoEvents();
-
-        using var bmp = new Bitmap(form.Width, form.Height);
-        form.DrawToBitmap(bmp, new Rectangle(0, 0, form.Width, form.Height));
-        bmp.Save(outputPath, System.Drawing.Imaging.ImageFormat.Png);
-        form.Close();
+        CaptureWindow(form, outputPath);
 
         Console.WriteLine(
             $"Theme: {(Theme.IsDark ? "dark" : "light")}, " +
@@ -113,6 +107,51 @@ internal static partial class Spike
         IsConnected = connected,
         Kind = DeviceKind.Classic,
     };
+
+    /// <summary>
+    /// Renders a window to a PNG for inspecting layout and text.
+    ///
+    /// The background colour in the result is NOT trustworthy: DrawToBitmap renders the client
+    /// background dark even when the form's BackColor is white and Application.ColorMode is
+    /// Classic. Judge light mode by the values the app reports, printed alongside each capture,
+    /// or by simply looking at the running dialog. Reading the screen instead is not an option
+    /// either — without a running message loop the window is not painted in time, and the capture
+    /// returns whatever else is on the desktop.
+    /// </summary>
+    private static void CaptureWindow(Form form, string outputPath)
+    {
+        form.Show();
+        Application.DoEvents();
+
+        using var bmp = new Bitmap(form.Width, form.Height);
+        using (var g = Graphics.FromImage(bmp))
+            g.Clear(form.BackColor);
+
+        form.DrawToBitmap(bmp, new Rectangle(0, 0, form.Width, form.Height));
+        bmp.Save(outputPath, System.Drawing.Imaging.ImageFormat.Png);
+        form.Close();
+    }
+
+    /// <summary>Captures the settings dialog so its layout and theming can be checked.</summary>
+    internal static int RenderSettings(string outputPath, Settings settings)
+    {
+        AttachConsole(ATTACH_PARENT_PROCESS);
+        using var form = new SettingsForm(settings);
+        CaptureWindow(form, outputPath);
+
+#pragma warning disable WFO5001 // Application.ColorMode is experimental in .NET 9.
+        string colorMode = Application.ColorMode.ToString();
+#pragma warning restore WFO5001
+
+        // These values, not the PNG, are what says whether light mode is applied.
+        Console.WriteLine($"culture:      {CultureInfo.CurrentUICulture.Name}");
+        Console.WriteLine($"autostart:    {Autostart.IsEnabled}");
+        Console.WriteLine($"Theme.Mode:   {Theme.Mode} (isDark: {Theme.IsDark})");
+        Console.WriteLine($"ColorMode:    {colorMode}");
+        Console.WriteLine($"BackColor:    {form.BackColor}");
+        Console.WriteLine($"written to:   {outputPath}");
+        return 0;
+    }
 
     internal static int List()
     {

@@ -17,13 +17,16 @@ internal sealed class TrayApplicationContext : ApplicationContext
     private readonly ContextMenuStrip _menu;
     private readonly DeviceService _devices = new();
     private readonly Favorites _favorites = new();
+    private readonly Settings _settings;
     private readonly System.Windows.Forms.Timer _refreshTimer;
 
     /// <summary>Devices with an attempt in flight, so the menu can show it and block re-entry.</summary>
     private readonly Dictionary<ulong, DeviceActivity> _activity = [];
 
-    internal TrayApplicationContext()
+    internal TrayApplicationContext(Settings settings)
     {
+        _settings = settings;
+
         _menu = new ContextMenuStrip
         {
             ShowImageMargin = false,
@@ -108,6 +111,7 @@ internal sealed class TrayApplicationContext : ApplicationContext
 
         _menu.Items.Add(new ToolStripSeparator());
         _menu.Items.Add(new ToolStripMenuItem(Strings.MenuManageFavorites, null, (_, _) => ShowFavorites()));
+        _menu.Items.Add(new ToolStripMenuItem(Strings.MenuSettings, null, (_, _) => ShowSettings()));
         _menu.Items.Add(new ToolStripMenuItem(Strings.MenuRefresh, null, (_, _) => _ = RefreshAsync()));
         _menu.Items.Add(new ToolStripMenuItem(Strings.MenuExit, null, (_, _) => ExitThread()));
     }
@@ -116,6 +120,20 @@ internal sealed class TrayApplicationContext : ApplicationContext
     {
         using var form = new FavoritesForm(_devices.Devices, _favorites);
         form.ShowDialog();
+    }
+
+    private void ShowSettings()
+    {
+        using var form = new SettingsForm(_settings);
+        if (form.ShowDialog() != DialogResult.OK)
+            return;
+
+        // Both take effect without a restart: the menu is rebuilt from scratch every time it
+        // opens, and any further dialog is constructed fresh.
+        AppSetup.ApplyLanguage(_settings);
+        AppSetup.ApplyColorMode(_settings);
+        _menu.Renderer = new ThemedMenuRenderer();
+        BuildMenu();
     }
 
     private async Task ToggleConnectionAsync(BluetoothEntry device)

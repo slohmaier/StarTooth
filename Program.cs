@@ -1,5 +1,3 @@
-using System.Globalization;
-
 namespace StarTooth;
 
 internal static class Program
@@ -7,6 +5,11 @@ internal static class Program
     [STAThread]
     private static int Main(string[] args)
     {
+        Settings settings = Settings.Load();
+        AppSetup.ApplyLanguage(settings);
+
+        // An explicit --lang wins over the stored preference, so both translations can be
+        // inspected without changing the user's settings.
         ApplyLanguageOverride(args);
 
         // Spike entry points, used while the connect path is being validated.
@@ -21,40 +24,25 @@ internal static class Program
 
         ApplicationConfiguration.Initialize();
 
-        // Opts the standard controls into the Windows light/dark setting. Still experimental in
-        // .NET 9, and it does not cover ToolStrip, which ThemedMenuRenderer handles instead.
-#pragma warning disable WFO5001
-        Application.SetColorMode(SystemColorMode.System);
-#pragma warning restore WFO5001
+        // Covers the standard controls; ToolStrip is left to ThemedMenuRenderer.
+        AppSetup.ApplyColorMode(settings);
 
         if (args.Length > 1 && args[0] == "--render-dialog")
             return Spike.RenderDialog(args[1]);
         if (args.Length > 1 && args[0] == "--render-menu")
             return Spike.RenderMenu(args[1]);
+        if (args.Length > 1 && args[0] == "--render-settings")
+            return Spike.RenderSettings(args[1], settings);
 
-        Application.Run(new TrayApplicationContext());
+        Application.Run(new TrayApplicationContext(settings));
         return 0;
     }
 
-    /// <summary>
-    /// Honours "--lang &lt;culture&gt;" anywhere in the arguments. The app otherwise follows the
-    /// Windows display language; this exists so both translations can be checked on one machine.
-    /// </summary>
+    /// <summary>Honours "--lang &lt;culture&gt;" anywhere in the arguments.</summary>
     private static void ApplyLanguageOverride(string[] args)
     {
         int index = Array.IndexOf(args, "--lang");
-        if (index < 0 || index + 1 >= args.Length)
-            return;
-
-        try
-        {
-            var culture = new CultureInfo(args[index + 1]);
-            CultureInfo.DefaultThreadCurrentUICulture = culture;
-            CultureInfo.CurrentUICulture = culture;
-        }
-        catch (CultureNotFoundException)
-        {
-            // An unknown culture simply leaves the system language in place.
-        }
+        if (index >= 0 && index + 1 < args.Length)
+            AppSetup.TrySetCulture(args[index + 1]);
     }
 }

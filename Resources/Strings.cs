@@ -15,6 +15,7 @@ internal static class Strings
     internal static string MenuNoDevices => Get("Menu.NoDevices");
     internal static string MenuOtherDevices => Get("Menu.OtherDevices");
     internal static string MenuManageFavorites => Get("Menu.ManageFavorites");
+    internal static string MenuSettings => Get("Menu.Settings");
     internal static string MenuRefresh => Get("Menu.Refresh");
     internal static string MenuExit => Get("Menu.Exit");
 
@@ -56,6 +57,18 @@ internal static class Strings
     internal static string DialogHint => Get("Dialog.Hint");
     internal static string DialogListName => Get("Dialog.ListName");
     internal static string DialogListDescription => Get("Dialog.ListDescription");
+    internal static string SettingsTitle => Get("Settings.Title");
+    internal static string SettingsLanguage => Get("Settings.Language");
+    internal static string SettingsLanguageSystem => Get("Settings.LanguageSystem");
+    internal static string SettingsColorMode => Get("Settings.ColorMode");
+    internal static string SettingsColorModeSystem => Get("Settings.ColorModeSystem");
+    internal static string SettingsColorModeLight => Get("Settings.ColorModeLight");
+    internal static string SettingsColorModeDark => Get("Settings.ColorModeDark");
+    internal static string SettingsAutostart => Get("Settings.Autostart");
+    internal static string SettingsAutostartDescription => Get("Settings.AutostartDescription");
+    internal static string SettingsAutostartFailedTitle => Get("Settings.AutostartFailedTitle");
+    internal static string SettingsAutostartFailedText => Get("Settings.AutostartFailedText");
+
     internal static string DialogOk => Get("Dialog.Ok");
     internal static string DialogCancel => Get("Dialog.Cancel");
 

@@ -71,6 +71,9 @@
     <value>&amp;Manage Favorites…</value>
     <comment>Opens the favorites dialog. The ampersand marks the access key.</comment>
   </data>
+  <data name="Menu.Settings" xml:space="preserve">
+    <value>&amp;Settings…</value>
+  </data>
   <data name="Menu.Refresh" xml:space="preserve">
     <value>&amp;Refresh</value>
   </data>
@@ -188,6 +191,42 @@
   <data name="Dialog.ListDescription" xml:space="preserve">
     <value>List of all paired Bluetooth devices. Checked devices appear at the top of the menu as favorites.</value>
   </data>
+  <data name="Settings.Title" xml:space="preserve">
+    <value>StarTooth – Settings</value>
+  </data>
+  <data name="Settings.Language" xml:space="preserve">
+    <value>&amp;Language:</value>
+  </data>
+  <data name="Settings.LanguageSystem" xml:space="preserve">
+    <value>Use Windows display language</value>
+    <comment>Default entry of the language list.</comment>
+  </data>
+  <data name="Settings.ColorMode" xml:space="preserve">
+    <value>Choose your &amp;mode:</value>
+    <comment>Wording of the Windows personalisation settings for light and dark.</comment>
+  </data>
+  <data name="Settings.ColorModeSystem" xml:space="preserve">
+    <value>Follow Windows setting</value>
+  </data>
+  <data name="Settings.ColorModeLight" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="Settings.ColorModeDark" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="Settings.Autostart" xml:space="preserve">
+    <value>Start StarTooth when I sign in to &amp;Windows</value>
+  </data>
+  <data name="Settings.AutostartDescription" xml:space="preserve">
+    <value>Adds StarTooth to the programs Windows starts automatically for your account.</value>
+  </data>
+  <data name="Settings.AutostartFailedTitle" xml:space="preserve">
+    <value>Autostart could not be changed</value>
+  </data>
+  <data name="Settings.AutostartFailedText" xml:space="preserve">
+    <value>Windows refused the change to the registry. The setting was left as it was.</value>
+  </data>
+
   <data name="Dialog.Ok" xml:space="preserve">
     <value>OK</value>
     <comment>No access key: this is the default button, reached with Enter.</comment>

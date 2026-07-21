@@ -12,8 +12,25 @@ internal static class Theme
         @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize";
 
     private static bool? _isDark;
+    private static ThemeMode _mode = ThemeMode.System;
 
-    internal static bool IsDark => _isDark ??= ReadIsDark();
+    /// <summary>Overrides the Windows setting when set to something other than System.</summary>
+    internal static ThemeMode Mode
+    {
+        get => _mode;
+        set
+        {
+            _mode = value;
+            Invalidate();
+        }
+    }
+
+    internal static bool IsDark => Mode switch
+    {
+        ThemeMode.Light => false,
+        ThemeMode.Dark => true,
+        _ => _isDark ??= ReadIsDark(),
+    };
 
     /// <summary>Drops the cached value so the next read picks up a theme switch.</summary>
     internal static void Invalidate() => _isDark = null;
