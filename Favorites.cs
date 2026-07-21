@@ -26,11 +26,11 @@ internal sealed class Favorites
 
     internal bool Contains(string key) => _keys.Contains(key);
 
-    internal void Toggle(string key)
+    internal void SetFavorite(string key, bool isFavorite)
     {
-        if (!_keys.Remove(key))
-            _keys.Add(key);
-        Save();
+        bool changed = isFavorite ? _keys.Add(key) : _keys.Remove(key);
+        if (changed)
+            Save();
     }
 
     private static HashSet<string> Load(string path)

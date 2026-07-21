@@ -1,4 +1,5 @@
 using System.Reflection;
+using Microsoft.Win32;
 using StarTooth.Bluetooth;
 
 namespace StarTooth;
@@ -17,7 +18,12 @@ internal sealed class TrayApplicationContext : ApplicationContext
 
     internal TrayApplicationContext()
     {
-        _menu = new ContextMenuStrip { ShowImageMargin = false };
+        _menu = new ContextMenuStrip
+        {
+            ShowImageMargin = false,
+            Renderer = new ThemedMenuRenderer(),
+            ShowItemToolTips = true,
+        };
         _menu.Opening += (_, _) => BuildMenu();
 
         _notifyIcon = new NotifyIcon
@@ -31,11 +37,23 @@ internal sealed class TrayApplicationContext : ApplicationContext
 
         _devices.Updated += () => _menu.BeginInvoke(BuildMenu);
 
+        SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
+
         _refreshTimer = new System.Windows.Forms.Timer { Interval = 15_000 };
         _refreshTimer.Tick += (_, _) => _ = RefreshAsync();
         _refreshTimer.Start();
 
         _ = RefreshAsync();
+    }
+
+    /// <summary>Picks up a light/dark switch while the app is running.</summary>
+    private void OnUserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e)
+    {
+        if (e.Category is not (UserPreferenceCategory.General or UserPreferenceCategory.Color))
+            return;
+
+        Theme.Invalidate();
+        _menu.Renderer = new ThemedMenuRenderer();
     }
 
     /// <summary>A left click should open the same menu as a right click.</summary>
@@ -73,8 +91,7 @@ internal sealed class TrayApplicationContext : ApplicationContext
         var devices = _devices.Devices;
         if (devices.Count == 0)
         {
-            var empty = new ToolStripMenuItem("Keine gepairten Geräte gefunden") { Enabled = false };
-            _menu.Items.Add(empty);
+            _menu.Items.Add(new ToolStripMenuItem("Keine gepairten Geräte gefunden") { Enabled = false });
         }
         else if (_favorites.IsEmpty)
         {
@@ -101,40 +118,43 @@ internal sealed class TrayApplicationContext : ApplicationContext
         }
 
         _menu.Items.Add(new ToolStripSeparator());
-        _menu.Items.Add(new ToolStripMenuItem("Strg+Klick setzt einen Stern") { Enabled = false });
-        _menu.Items.Add(new ToolStripMenuItem("Aktualisieren", null, (_, _) => _ = RefreshAsync()));
-        _menu.Items.Add(new ToolStripMenuItem("Beenden", null, (_, _) => ExitThread()));
+        _menu.Items.Add(new ToolStripMenuItem("&Favoriten verwalten…", null, (_, _) => ShowFavorites()));
+        _menu.Items.Add(new ToolStripMenuItem("&Aktualisieren", null, (_, _) => _ = RefreshAsync()));
+        _menu.Items.Add(new ToolStripMenuItem("&Beenden", null, (_, _) => ExitThread()));
     }
 
     private ToolStripMenuItem CreateDeviceItem(BluetoothEntry device)
     {
         bool isFavorite = _favorites.Contains(device.Key);
-        string star = isFavorite ? StarFilled : StarHollow;
+        string state = device.IsConnected ? "verbunden" : "getrennt";
 
-        var item = new ToolStripMenuItem($"{star}  {device.Name}")
+        var item = new ToolStripMenuItem($"{(isFavorite ? StarFilled : StarHollow)}  {device.Name}")
         {
             Checked = device.IsConnected,
             CheckOnClick = false,
-            ToolTipText = $"{ClassicBluetooth.FormatAddress(device.Address)} · " +
-                          (device.IsConnected ? "verbunden" : "getrennt"),
+            ToolTipText = $"{ClassicBluetooth.FormatAddress(device.Address)} · {state}",
+
+            // Bold text and a star glyph carry no meaning for a screen reader, so the state is
+            // spelled out here instead of being left to the visuals.
+            AccessibleName = isFavorite
+                ? $"{device.Name}, Favorit, {state}"
+                : $"{device.Name}, {state}",
+            AccessibleDescription = device.IsConnected
+                ? "Aktivieren trennt die Verbindung."
+                : "Aktivieren stellt die Verbindung her.",
         };
 
         if (device.IsConnected)
             item.Font = new Font(item.Font, FontStyle.Bold);
 
-        item.Click += (_, _) => OnDeviceClicked(device);
+        item.Click += (_, _) => _ = ToggleConnectionAsync(device);
         return item;
     }
 
-    private void OnDeviceClicked(BluetoothEntry device)
+    private void ShowFavorites()
     {
-        if (Control.ModifierKeys.HasFlag(Keys.Control))
-        {
-            _favorites.Toggle(device.Key);
-            return;
-        }
-
-        _ = ToggleConnectionAsync(device);
+        using var form = new FavoritesForm(_devices.Devices, _favorites);
+        form.ShowDialog();
     }
 
     private async Task ToggleConnectionAsync(BluetoothEntry device)
@@ -170,6 +190,7 @@ internal sealed class TrayApplicationContext : ApplicationContext
     {
         if (disposing)
         {
+            SystemEvents.UserPreferenceChanged -= OnUserPreferenceChanged;
             _refreshTimer.Dispose();
             _notifyIcon.Visible = false;
             _notifyIcon.Dispose();

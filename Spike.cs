@@ -31,6 +31,24 @@ internal static partial class Spike
         return 0;
     }
 
+    /// <summary>Captures the favourites dialog to a PNG so its theming can be checked.</summary>
+    internal static int RenderDialog(string outputPath)
+    {
+        AttachConsole(ATTACH_PARENT_PROCESS);
+        var devices = ClassicBluetooth.ListPaired();
+        using var form = new FavoritesForm(devices, new Favorites());
+        form.Show();
+        Application.DoEvents();
+
+        using var bmp = new Bitmap(form.Width, form.Height);
+        form.DrawToBitmap(bmp, new Rectangle(0, 0, form.Width, form.Height));
+        bmp.Save(outputPath, System.Drawing.Imaging.ImageFormat.Png);
+        form.Close();
+
+        Console.WriteLine($"Theme: {(Theme.IsDark ? "dunkel" : "hell")} -> {outputPath}");
+        return 0;
+    }
+
     internal static int List()
     {
         AttachConsole(ATTACH_PARENT_PROCESS);

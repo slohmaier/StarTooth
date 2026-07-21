@@ -18,6 +18,16 @@ internal static class Program
             return Spike.RenderIcon(args[1]);
 
         ApplicationConfiguration.Initialize();
+
+        // Opts the standard controls into the Windows light/dark setting. Still experimental in
+        // .NET 9, and it does not cover ToolStrip, which ThemedMenuRenderer handles instead.
+#pragma warning disable WFO5001
+        Application.SetColorMode(SystemColorMode.System);
+#pragma warning restore WFO5001
+
+        if (args.Length > 1 && args[0] == "--render-dialog")
+            return Spike.RenderDialog(args[1]);
+
         Application.Run(new TrayApplicationContext());
         return 0;
     }
