@@ -21,6 +21,8 @@ internal static class Program
             return Spike.SetConnected(args[1], connect: false);
         if (args.Length > 1 && args[0] == "--render-icon")
             return Spike.RenderIcon(args[1]);
+        if (args.Length > 1 && args[0] == "--render-ico")
+            return Spike.RenderIcoFile(args[1]);
 
         ApplicationConfiguration.Initialize();
 

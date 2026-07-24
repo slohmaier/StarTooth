@@ -2,3 +2,7 @@ bin/
 obj/
 *.user
 .vs/
+
+# Installer build artifacts
+installer/payload/
+installer/output/

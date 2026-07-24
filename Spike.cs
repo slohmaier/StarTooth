@@ -153,6 +153,54 @@ internal static partial class Spike
         return 0;
     }
 
+    /// <summary>
+    /// Writes a real multi-resolution .ico (PNG-compressed entries, supported by Windows Vista+)
+    /// from the runtime icon artwork. Used as the application and installer icon.
+    /// </summary>
+    internal static int RenderIcoFile(string outputPath)
+    {
+        AttachConsole(ATTACH_PARENT_PROCESS);
+        int[] sizes = [16, 24, 32, 48, 64, 128, 256];
+
+        var images = new List<byte[]>();
+        foreach (int size in sizes)
+        {
+            using Bitmap bmp = TrayIcons.Render(size);
+            using var ms = new MemoryStream();
+            bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+            images.Add(ms.ToArray());
+        }
+
+        using var file = new FileStream(outputPath, FileMode.Create);
+        using var w = new BinaryWriter(file);
+
+        // ICONDIR
+        w.Write((ushort)0);            // reserved
+        w.Write((ushort)1);            // type: icon
+        w.Write((ushort)sizes.Length); // image count
+
+        int offset = 6 + (16 * sizes.Length);
+        for (int i = 0; i < sizes.Length; i++)
+        {
+            // ICONDIRENTRY. A dimension of 256 is encoded as 0.
+            w.Write((byte)(sizes[i] >= 256 ? 0 : sizes[i])); // width
+            w.Write((byte)(sizes[i] >= 256 ? 0 : sizes[i])); // height
+            w.Write((byte)0);              // palette count
+            w.Write((byte)0);              // reserved
+            w.Write((ushort)1);            // colour planes
+            w.Write((ushort)32);           // bits per pixel
+            w.Write((uint)images[i].Length);
+            w.Write((uint)offset);
+            offset += images[i].Length;
+        }
+
+        foreach (byte[] image in images)
+            w.Write(image);
+
+        Console.WriteLine($"{sizes.Length} sizes -> {outputPath}");
+        return 0;
+    }
+
     internal static int List()
     {
         AttachConsole(ATTACH_PARENT_PROCESS);

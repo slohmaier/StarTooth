@@ -10,6 +10,21 @@ grouped below under "Other devices".
 
 ![The StarTooth tray menu with favourites at the top and other devices below](docs/screenshot-menu.png)
 
+## Download
+
+Grab the latest build from the [Releases](https://github.com/slohmaier/StarTooth/releases) page. Two
+forms, both self-contained — no .NET runtime to install:
+
+- **Installer** (`StarTooth-Setup-<version>.exe`) — Start Menu entry, optional desktop icon,
+  clean uninstall via Programs & Features.
+- **Portable** (`StarTooth.exe`) — a single file, just run it. Nothing is written outside
+  `%APPDATA%\StarTooth` (settings and favourites) and, if you enable autostart, the registry Run
+  key.
+
+Requires 64-bit Windows 10 build 19041 or newer. Both files are Authenticode-signed; the signing
+certificate is a personal development cert, so Windows SmartScreen may still show a warning on
+machines that do not trust it — choose "More info → Run anyway".
+
 ## Usage
 
 | Action | Effect |
@@ -151,13 +166,29 @@ dotnet build
 
 Requires the .NET 9 SDK and Windows 10 build 19041 or newer.
 
+### Packaging
+
+`installer/build_installer.ps1` produces the release artifacts: it publishes a self-contained
+single-file `StarTooth.exe` (win-x64, no trimming), signs it with the dev certificate, compiles the
+[Inno Setup](https://jrsoftware.org/isinfo.php) installer around it, and signs that too.
+
+```powershell
+installer\build_installer.ps1              # full build, signed
+installer\build_installer.ps1 -SkipSign    # unsigned, for a quick local test
+```
+
+The version is read from `<Version>` in the `.csproj`; nothing is hard-coded in the installer.
+Trimming is deliberately off — WinForms and the satellite resource assemblies rely on reflection.
+The German localisation is bundled into the single file, so the portable exe is genuinely one file.
+
 ### Diagnostics
 
 ```powershell
 StarTooth.exe --list                      # list paired Classic devices
 StarTooth.exe --connect AA:BB:CC:DD:EE:FF # test connecting
 StarTooth.exe --disconnect AA:BB:CC:DD:EE:FF
-StarTooth.exe --render-icon <directory>   # write the icon out as PNG
+StarTooth.exe --render-icon <directory>   # write the icon out as PNGs
+StarTooth.exe --render-ico <file.ico>     # write the multi-size application icon
 StarTooth.exe --render-dialog <file.png>  # write the favourites dialog out as PNG
 StarTooth.exe --render-menu <file.png>    # write the menu in all states as PNG, and
                                           # print the screen reader texts to the console

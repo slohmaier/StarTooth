@@ -3,7 +3,18 @@
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 The project has no released version yet; all changes are under "Unreleased".
 
-## [Unreleased]
+## [1.0.0-rc.1] — Unreleased
+
+First release candidate. Everything below is in place; the connect path still awaits a test on
+real hardware before this becomes 1.0.0.
+
+### Packaging
+- Self-contained single-file build (win-x64, no .NET runtime required); the German localisation is
+  bundled into the single exe.
+- Inno Setup installer with a Start Menu entry, optional desktop icon and clean uninstall, built
+  and signed by `installer/build_installer.ps1`.
+- Both the exe and the installer are Authenticode-signed with the development certificate.
+- Multi-resolution application icon embedded in the exe.
 
 ### Added
 - Tray menu that lists every paired Bluetooth device (Classic and BLE) and connects or disconnects

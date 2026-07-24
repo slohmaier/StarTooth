@@ -9,13 +9,26 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Resources\StarTooth.ico</ApplicationIcon>
     <!-- The neutral resources are English, so no en satellite assembly is probed for. -->
     <NeutralResourcesLanguage>en</NeutralResourcesLanguage>
     <AssemblyTitle>StarTooth</AssemblyTitle>
     <Product>StarTooth</Product>
     <Company>Stefan Lohmaier</Company>
     <Copyright>Copyright (c) 2026 Stefan Lohmaier</Copyright>
-    <Version>0.1.0</Version>
+    <Version>1.0.0-rc.1</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+  </PropertyGroup>
+
+  <!-- Single-file publish settings. Trimming is intentionally off: WinForms and the
+       satellite resource assemblies rely on reflection and would break under it. -->
+  <PropertyGroup Condition="'$(PublishSingleFile)' == 'true'">
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <DebugType>none</DebugType>
   </PropertyGroup>
 
 </Project>
