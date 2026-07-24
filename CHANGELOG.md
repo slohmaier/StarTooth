@@ -1,27 +1,27 @@
 # Changelog
 
-Format nach [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
-Das Projekt hat noch keine veröffentlichte Version; alle Änderungen stehen unter „Unveröffentlicht“.
+Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+The project has no released version yet; all changes are under "Unreleased".
 
-## [Unveröffentlicht]
+## [Unreleased]
 
-### Hinzugefügt
-- Tray-Menü, das alle gekoppelten Bluetooth-Geräte (Classic und BLE) auflistet und per Klick
-  verbindet oder trennt.
-- Favoriten: mit einem Stern markierte Geräte stehen oben, der Rest unter „Weitere Geräte“; ohne
-  Stern bleibt die Liste flach.
-- Barrierefreier Dialog „Favoriten verwalten“ auf Basis einer Standard-`CheckedListBox`
-  (Leertaste schaltet um, Screenreader sagt den Zustand an).
-- Zustandsindikatoren je Eintrag (`●` verbunden, `○` nicht verbunden, `◌` Versuch läuft, `★`
-  Favorit), jeweils ausgeschrieben im `AccessibleName`.
-- Windows-Benachrichtigungen für Beginn, Erfolg und Fehlschlag eines Verbindungsversuchs.
-- Einstellungsdialog für Sprache, Farbmodus und Autostart. Sprache und Farbmodus in
-  `%APPDATA%\StarTooth\settings.json`, Autostart im `Run`-Schlüssel der Registrierung.
-- Mehrsprachigkeit über Satellite Assemblies: Englisch (neutrale Kultur) und Deutsch, mit der
-  Terminologie der Windows-Oberfläche.
-- Light-/Dark-Mode, das der Windows-Einstellung folgt oder fest gewählt werden kann.
-- Zur Laufzeit gezeichnetes Icon (Bluetooth-Rune auf einem Stern).
+### Added
+- Tray menu that lists every paired Bluetooth device (Classic and BLE) and connects or disconnects
+  it with a click.
+- Favourites: starred devices sit at the top, the rest under "Other devices"; without a star the
+  list stays flat.
+- Accessible "Manage Favorites" dialog built on a standard `CheckedListBox` (space bar toggles,
+  screen reader announces the state).
+- Per-entry state indicators (`●` connected, `○` not connected, `◌` attempt running, `★`
+  favourite), each spelled out in `AccessibleName`.
+- Windows notifications for the start, success and failure of a connection attempt.
+- Settings dialog for language, colour mode and autostart. Language and colour mode in
+  `%APPDATA%\StarTooth\settings.json`, autostart in the registry Run key.
+- Localisation via satellite assemblies: English (neutral culture) and German, using the
+  terminology of the Windows interface.
+- Light/dark mode that follows the Windows setting or can be fixed.
+- Icon drawn at runtime (a Bluetooth rune on a star).
 
-### Bekannte Einschränkungen
-- Der Verbindungspfad (`BluetoothSetServiceState`) ist noch nicht an echter Hardware getestet.
-- Die Ansage der Benachrichtigungen durch NVDA ist noch nicht akustisch gegengehört.
+### Known limitations
+- The connect path (`BluetoothSetServiceState`) has not yet been tested on real hardware.
+- The announcement of the notifications by NVDA has not yet been verified aloud.
